@@ -20,6 +20,8 @@ yarn add renpy-parser
     Typescript
   </summary>
 
+  <br>
+
   ```ts
   import Parser from 'renpy-parser';
 
@@ -35,6 +37,8 @@ yarn add renpy-parser
     <img src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" alt="Typscript" width="20px" align="center" />&nbsp;
     Javascript
   </summary>
+
+  <br>
 
   ```ts
   const { Reader } = require('renpy-parser');
