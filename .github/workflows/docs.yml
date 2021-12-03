@@ -24,7 +24,7 @@ jobs:
         uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
-      - name: Install Dependencies
+      - name: Generate Documentation
         uses: borales/actions-yarn@v2.3.0
         with:
           cmd: docs
