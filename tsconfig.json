@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "commonjs",
+    "target": "es2015",
+    "strict": true,
+    "lib": [
+      "esnext",
+      "esnext.array",
+      "esnext.asynciterable",
+      "esnext.intl",
+      "esnext.symbol",
+      "DOM"
+    ],
+    "declaration": true,
+    "removeComments": false,
+    "pretty": false,
+    "noImplicitAny": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "skipDefaultLibCheck": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "baseUrl": "./src/",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
