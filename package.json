@@ -4,7 +4,11 @@
   "description": "Parse .rpy files to JSON files",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "jest --verbose"
+    "test": "jest --verbose --detectOpenHandles",
+    "verify": "tsc -p ./tsconfig.json --noEmit",
+    "build": "tsc -p ./tsconfig.json && tscpaths -p ./tsconfig.json -s ./src -o ./dist",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "keywords": [
     "renpy",
@@ -23,12 +27,14 @@
     "@typescript-eslint/parser": "5.5.0",
     "eslint": "8.3.0",
     "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "8.3.0",
     "eslint-plugin-eslint-plugin": "4.0.2",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-prettier": "4.0.0",
     "jest": "27.4.3",
     "prettier": "2.5.0",
-    "ts-node": "10.4.0",
+    "ts-jest": "27.0.7",
+    "tscpaths": "0.0.9",
     "typescript": "4.5.2"
   }
 }

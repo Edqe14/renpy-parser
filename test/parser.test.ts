@@ -1,8 +1,8 @@
-const Runner = require('../src/index.js');
-const Parser = require('../src/modules/parser.js');
-
-const fs = require('fs');
-const path = require('path');
+/* eslint-disable no-undef */
+import Runner from '@/index';
+import fs from 'fs';
+import path from 'path';
+import Parser from '@/modules/parser';
 
 const testFile = path.join(__dirname, 'test.rpy');
 const file = fs.readFileSync(testFile, 'utf8');

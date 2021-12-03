@@ -1,40 +1,39 @@
-// eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-const { Lexer, Token } = require('lexure');
-const Character = require('./character.js');
-const Effect = require('./effect.js');
-const Helper = require('../helper.js');
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-module.exports = class Command {
-  /**
-   * @param  {string} line
-   * @param  {Character[]} characters
-   */
-  constructor(line, characters) {
+import { Lexer, Token } from 'lexure';
+import Character from '@/modules/components/character';
+import Effect from '@/modules/components/effect';
+import Helper from '@/modules/helper';
+
+export interface ParsedLine {
+  type: string;
+  [key: string]: any;
+}
+
+export default class Command {
+  public data: Record<string, any>;
+
+  constructor(line: string, characters: Character[]) {
     const parsed = Command.parseLine(line, characters);
-    Object.assign(this, Helper.clearUndefinedOrNull(parsed));
+    this.data = Helper.clearUndefinedOrNull(parsed);
   }
 
-  /**
-   * @param  {string} line
-   * @param  {Character[]} characters
-   */
-  static parseLine(line, characters) {
+  static parseLine(line: string, characters: Character[]): ParsedLine {
     const trimmed = line.trim();
     const lexer = new Lexer(trimmed).setQuotes([['"', '"']]);
 
     const parsed = lexer.lex();
-    const [whoOrCommandOrNarrator, valueOrCharacter, ...expressionOrOthers] =
-      parsed;
+    const [whoOrCommandOrNarrator, valueOrCharacter, ...expressionOrOthers] = parsed;
 
     const type = Command.getType(parsed);
     const obj = {
-      type,
+      type
     };
 
     switch (type) {
       case 'NARRATOR': {
         Object.assign(obj, {
-          text: whoOrCommandOrNarrator.value,
+          text: whoOrCommandOrNarrator.value
         });
         break;
       }
@@ -49,7 +48,7 @@ module.exports = class Command {
               action,
               name: [valueOrCharacter?.value, ...exp.split(' ')]
                 .filter((v) => v !== undefined || v !== null)
-                .join(' '),
+                .join(' ')
             });
             break;
           }
@@ -57,7 +56,7 @@ module.exports = class Command {
           case 'with': {
             Object.assign(obj, {
               action,
-              name: valueOrCharacter?.value,
+              name: valueOrCharacter?.value
             });
             break;
           }
@@ -66,36 +65,36 @@ module.exports = class Command {
           case 'queue':
           case 'stop': {
             const effects = Helper.convertTo2D(expressionOrOthers.slice(1)).map(
-              ([name, duration]) =>
-                new Effect(
-                  name.value,
-                  isNaN(duration.value) ? 1 : Number(duration.value)
-                )
+              ([name, duration]) => new Effect(
+                name.value,
+                Number.isNaN(duration.value) ? 1 : Number(duration.value)
+              )
             );
 
             Object.assign(obj, {
               action,
               category: valueOrCharacter.value,
               name: expressionOrOthers[0]?.value,
-              effects: effects.length === 0 ? null : effects,
+              effects: effects.length === 0 ? null : effects
             });
             break;
           }
 
           case 'pause': {
+            const duration = Number(valueOrCharacter?.value);
+
             Object.assign(obj, {
               action,
-              duration: isNaN(valueOrCharacter?.value)
-                ? null
-                : Number(valueOrCharacter?.value),
+              duration: Number.isNaN(duration) ? null : duration
             });
+
             break;
           }
 
           case 'jump': {
             Object.assign(obj, {
               action,
-              name: valueOrCharacter?.value,
+              name: valueOrCharacter?.value
             });
             break;
           }
@@ -104,7 +103,7 @@ module.exports = class Command {
             Object.assign(obj, {
               action,
               character: valueOrCharacter?.value,
-              ...(exp.length && { expression: exp }),
+              ...(exp.length && { expression: exp })
             });
             break;
           }
@@ -118,18 +117,18 @@ module.exports = class Command {
             characters.find(
               (c) => c.definition === whoOrCommandOrNarrator.value
             ) ?? new Character(null, [[whoOrCommandOrNarrator.value]]),
-          text: valueOrCharacter.value,
+          text: valueOrCharacter.value
         });
+        break;
       }
+
+      default: break;
     }
 
     return obj;
   }
 
-  /**
-   * @param  {Token[]} parsed
-   */
-  static getType(parsed) {
+  static getType(parsed: Token[]) {
     if (parsed.length === 1 && parsed[0].raw.startsWith('"')) return 'NARRATOR';
 
     const cmd = parsed[0].value;
@@ -148,7 +147,7 @@ module.exports = class Command {
       'stop',
       'pause',
       'return',
-      'jump',
+      'jump'
     ];
   }
-};
+}

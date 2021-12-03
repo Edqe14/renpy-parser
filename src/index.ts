@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs');
-const Parser = require('./modules/parser.js');
+import fs from 'fs';
+import Parser from './modules/parser';
 
-module.exports = class Reader {
-  /**
-   * @param  {fs.PathLike} file
-   */
-  static parseFromFile(file) {
+export default class Reader {
+  static parseFromFile(file: fs.PathLike) {
     if (!fs.existsSync(file)) throw new Error('Missing file');
     if (fs.statSync(file).isDirectory()) throw new Error('Path is a directory');
 
@@ -14,13 +10,10 @@ module.exports = class Reader {
     return Reader.parseFromText(str);
   }
 
-  /**
-   * @param  {string} str
-   */
-  static parseFromText(str) {
+  static parseFromText(str: string) {
     if (typeof str !== 'string') throw new Error('Invalid argument "str"');
     if (str.length === 0) throw new Error('Invalid string');
 
     return new Parser(str);
   }
-};
+}

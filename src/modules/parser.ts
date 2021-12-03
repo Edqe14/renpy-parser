@@ -1,26 +1,29 @@
-const Helper = require('./helper.js');
-const lexure = require('lexure');
-const { Lexer } = lexure;
-const { Character, Label, Command, Image } = require('./components/index.js');
+import * as lexure from 'lexure';
+import {
+  Character, Label, Command, Image
+} from '@/modules/components/index';
+import Helper from '@/modules/helper';
 
-module.exports = class Parser {
-  /**
-   * @param  {string} str
-   */
-  constructor(str) {
+export default class Parser {
+  public characters: Character[];
+
+  public labels: Label[];
+
+  public images: Image[];
+
+  private activeLabel: string | null;
+
+  constructor(str: string) {
     this.characters = [];
     this.labels = [];
     this.images = [];
 
-    this._activeLabel = null;
+    this.activeLabel = null;
 
     this.parse(str);
   }
 
-  /**
-   * @param  {string} str
-   */
-  parse(str) {
+  parse(str: string) {
     const lines = str
       .replace(/\r\n/gi, '\n')
       .split('\n')
@@ -29,14 +32,11 @@ module.exports = class Parser {
     lines.forEach((line) => this.parseLine(line));
   }
 
-  /**
-   * @param  {string} line
-   */
-  parseLine(line) {
-    const parsedLine = new Lexer(line)
+  parseLine(line: string) {
+    const parsedLine = new lexure.Lexer(line)
       .setQuotes([
         ['"', '"'],
-        ["'", "'"],
+        ['\'', '\'']
       ])
       .lex();
 
@@ -50,6 +50,7 @@ module.exports = class Parser {
       )
       .split(' ');
     const command = split[0];
+
     switch (command) {
       case 'define': {
         if (split[3].startsWith('Character')) {
@@ -61,7 +62,7 @@ module.exports = class Parser {
             .split(', ')
             .map((o) => o.split('='));
 
-          return this.characters.push(new Character(def, args));
+          this.characters.push(new Character(def, args));
         }
 
         break;
@@ -71,7 +72,8 @@ module.exports = class Parser {
         const name = split[1];
         const file = line.split('=')[1].trim().replace(/"/gi, '');
 
-        return this.images.push(new Image(name, file));
+        this.images.push(new Image(name, file));
+        break;
       }
 
       case 'label':
@@ -81,13 +83,13 @@ module.exports = class Parser {
           this.labels.push(new Label(name));
         }
 
-        this._activeLabel = name;
+        this.activeLabel = name;
         break;
       }
 
       default: {
         if (Helper.isIndented(line)) {
-          const label = this.labels.find((l) => l.name === this._activeLabel);
+          const label = this.labels.find((l) => l.name === this.activeLabel);
           if (label) label.appendCommand(new Command(line, this.characters));
         }
 
@@ -95,4 +97,4 @@ module.exports = class Parser {
       }
     }
   }
-};
+}

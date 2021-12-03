@@ -1,8 +1,8 @@
-const Runner = require('../src/index.js');
-
-const fs = require('fs');
-const path = require('path');
-const { Character } = require('../src/modules/components/index.js');
+/* eslint-disable no-undef */
+import Runner from '@/index';
+import fs from 'fs';
+import path from 'path';
+import { Character } from '@/modules/components';
 
 const testFile = path.join(__dirname, 'test.rpy');
 const file = fs.readFileSync(testFile, 'utf8');
