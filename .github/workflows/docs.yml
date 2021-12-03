@@ -1,0 +1,35 @@
+name: Documentation
+
+on: [pull_request]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Node.JS 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+      - name: Install Dependencies
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: install
+      - name: Generate Documentation
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: docs
+      - name: Deploy documentation
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: docs
