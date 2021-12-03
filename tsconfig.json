@@ -11,8 +11,7 @@
       "esnext.array",
       "esnext.asynciterable",
       "esnext.intl",
-      "esnext.symbol",
-      "DOM"
+      "esnext.symbol"
     ],
     "declaration": true,
     "removeComments": false,

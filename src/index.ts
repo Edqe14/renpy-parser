@@ -1,7 +1,7 @@
 import fs from 'fs';
-import Parser from './modules/parser';
+import Parser from '@/modules/parser';
 
-export default class Reader {
+export class Reader {
   static parseFromFile(file: fs.PathLike) {
     if (!fs.existsSync(file)) throw new Error('Missing file');
     if (fs.statSync(file).isDirectory()) throw new Error('Path is a directory');
@@ -17,3 +17,12 @@ export default class Reader {
     return new Parser(str);
   }
 }
+
+export default Reader;
+export { default as Parser } from '@/modules/parser';
+export { default as Helper } from '@/modules/parser';
+export { default as Character } from '@/modules/components/character';
+export { default as Command } from '@/modules/components/command';
+export { default as Label } from '@/modules/components/label';
+export { default as Image } from '@/modules/components/image';
+export { default as Effect } from '@/modules/components/effect';

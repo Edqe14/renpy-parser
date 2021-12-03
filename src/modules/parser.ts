@@ -11,6 +11,9 @@ export default class Parser {
 
   public images: Image[];
 
+  /**
+   * @ignore
+   */
   private activeLabel: string | null;
 
   constructor(str: string) {
