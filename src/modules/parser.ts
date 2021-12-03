@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import * as lexure from 'lexure';
 import {
   Character, Label, Command, Image
@@ -7,23 +8,23 @@ import Helper from '@/modules/helper';
 export default class Parser {
   public characters: Character[];
 
-  public labels: Label[];
+  public labels: Record<string, Label>;
 
   public images: Image[];
 
   /**
    * @ignore
    */
-  private activeLabel: string | null;
+  private _activeLabel: string | null;
 
   constructor(str: string) {
     if (!str || typeof str !== 'string') throw new TypeError('Input need to be a string!');
 
     this.characters = [];
-    this.labels = [];
+    this.labels = {};
     this.images = [];
 
-    this.activeLabel = null;
+    this._activeLabel = null;
 
     this.parse(str);
   }
@@ -84,17 +85,18 @@ export default class Parser {
       case 'label':
       case 'menu': {
         const name = command === 'menu' ? 'menu' : split[1].replace(/:/gi, '');
-        if (!this.labels.some((l) => l.name === name)) {
-          this.labels.push(new Label(name));
+        if (!Object.keys(this.labels).includes(name)) {
+          const label = new Label(name);
+          this.labels[label.name] = label;
         }
 
-        this.activeLabel = name;
+        this._activeLabel = name;
         break;
       }
 
       default: {
         if (Helper.isIndented(line)) {
-          const label = this.labels.find((l) => l.name === this.activeLabel);
+          const label = Object.values(this.labels).find((l) => l.name === this._activeLabel);
           if (label) label.appendCommand(new Command(line, this.characters));
         }
 
