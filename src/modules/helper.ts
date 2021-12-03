@@ -4,11 +4,11 @@ export default class Helper {
   }
 
   static isIndented(line: string) {
-    return line.startsWith('    ') || line.startsWith('\t');
+    return line.startsWith('    ') || line.startsWith('  ') || line.startsWith('\t');
   }
 
   static extractQuote(line: string) {
-    return (line.match(Helper.QUOTE_REGEX)?.[0] ?? '').replace(/"/gi, '');
+    return (line.match(Helper.QUOTE_REGEX)?.[1] ?? '');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,6 +29,6 @@ export default class Helper {
   }
 
   static get QUOTE_REGEX() {
-    return /(?:"[^"]*"|^[^"]*$)/;
+    return /"(.*?)"/;
   }
 }

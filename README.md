@@ -1,6 +1,6 @@
 # .rpy Parser
 
-A simple [Ren.py](https://www.renpy.org/) file parser for NodeJS.
+A basic [Ren.py](https://www.renpy.org/) file parser for NodeJS.
 
 ## 💾 Installation
 

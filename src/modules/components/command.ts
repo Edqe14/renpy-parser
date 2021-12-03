@@ -11,30 +11,57 @@ export interface ParsedLine {
 }
 
 export default class Command {
-  public data: Record<string, any>;
+  public data: Record<string, any> = {};
 
-  constructor(line: string, characters: Map<string, Character>) {
-    const parsed = Command.parseLine(line, characters);
-    this.data = Helper.clearUndefinedOrNull(parsed);
+  public type?: string;
+
+  public action?: string;
+
+  public at: string | null = null;
+
+  constructor(line: string, characters: Map<string, Character>, at: string | null) {
+    const {
+      type, action, ...parsed
+    } = Command.parseLine(line, characters, at);
+
+    Object.assign(this, Helper.clearUndefinedOrNull({
+      type,
+      action,
+      data: Helper.clearUndefinedOrNull(parsed),
+      at
+    }));
   }
 
-  static parseLine(line: string, characters: Map<string, Character>): ParsedLine {
+  static parseLine(
+    line: string,
+    characters: Map<string, Character>,
+    at: string | null
+  ): ParsedLine {
     const trimmed = line.trim();
     const lexer = new Lexer(trimmed).setQuotes([['"', '"']]);
 
     const parsed = lexer.lex();
     const [whoOrCommandOrNarrator, valueOrCharacter, ...expressionOrOthers] = parsed;
 
-    const type = Command.getType(parsed);
+    const type = Command.getType(parsed, at);
     const obj = {
       type
     };
 
     switch (type) {
+      case 'MENU': {
+        Object.assign(obj, {
+          name: whoOrCommandOrNarrator.value
+        });
+
+        break;
+      }
+
       case 'NARRATOR': {
         Object.assign(obj, {
           text: whoOrCommandOrNarrator.value
         });
+
         break;
       }
 
@@ -50,6 +77,7 @@ export default class Command {
                 .filter((v) => v !== undefined || v !== null)
                 .join(' ')
             });
+
             break;
           }
 
@@ -58,6 +86,7 @@ export default class Command {
               action,
               name: valueOrCharacter?.value
             });
+
             break;
           }
 
@@ -77,6 +106,7 @@ export default class Command {
               name: expressionOrOthers[0]?.value,
               effects: effects.length === 0 ? null : effects
             });
+
             break;
           }
 
@@ -96,6 +126,7 @@ export default class Command {
               action,
               name: valueOrCharacter?.value
             });
+
             break;
           }
 
@@ -105,9 +136,11 @@ export default class Command {
               character: valueOrCharacter?.value,
               ...(exp.length && { expression: exp })
             });
+
             break;
           }
         }
+
         break;
       }
 
@@ -116,9 +149,10 @@ export default class Command {
           character:
             [...characters.values()].find(
               (c) => c.definition === whoOrCommandOrNarrator.value
-            ) ?? new Character(null, [[whoOrCommandOrNarrator.value]]),
+            ) ?? new Character(null, [[whoOrCommandOrNarrator.value]], at),
           text: valueOrCharacter.value
         });
+
         break;
       }
 
@@ -128,11 +162,13 @@ export default class Command {
     return obj;
   }
 
-  static getType(parsed: Token[]) {
+  static getType(parsed: Token[], at: string | null) {
+    if (parsed[0].raw.trim().startsWith('"') && at === 'menu') return 'MENU';
     if (parsed.length === 1 && parsed[0].raw.startsWith('"')) return 'NARRATOR';
 
     const cmd = parsed[0].value;
     if (Command.EXECUTE_TYPE.includes(cmd)) return 'EXECUTE';
+
     return 'DIALOGUE';
   }
 

@@ -3,8 +3,11 @@ export default class Image {
 
   public value: string;
 
-  constructor(name: string, value: string) {
+  public at: string | null;
+
+  constructor(name: string, value: string, at: string | null) {
     this.name = name;
     this.value = value;
+    this.at = at;
   }
 }

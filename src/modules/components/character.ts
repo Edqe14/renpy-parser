@@ -5,12 +5,15 @@ export default class Character {
 
   public definition: string | null;
 
-  constructor(definition: string | null, args: string[][]) {
+  public at: string | null;
+
+  constructor(definition: string | null, args: string[][], at: string | null) {
     const { name, options } = Character.parseArgs(args);
 
     this.definition = definition;
     this.name = name;
     this.options = options;
+    this.at = at;
   }
 
   static parseArgs(args: string[][]) {
