@@ -58,7 +58,8 @@ export default class Parser {
     const command = split[0];
 
     switch (command) {
-      case 'define': {
+      case 'define':
+      case '$': {
         if (split[3].startsWith('Character')) {
           const def = split[1];
           const args = split
