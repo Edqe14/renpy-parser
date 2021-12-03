@@ -13,12 +13,12 @@ export interface ParsedLine {
 export default class Command {
   public data: Record<string, any>;
 
-  constructor(line: string, characters: Character[]) {
+  constructor(line: string, characters: Map<string, Character>) {
     const parsed = Command.parseLine(line, characters);
     this.data = Helper.clearUndefinedOrNull(parsed);
   }
 
-  static parseLine(line: string, characters: Character[]): ParsedLine {
+  static parseLine(line: string, characters: Map<string, Character>): ParsedLine {
     const trimmed = line.trim();
     const lexer = new Lexer(trimmed).setQuotes([['"', '"']]);
 
@@ -114,7 +114,7 @@ export default class Command {
       case 'DIALOGUE': {
         Object.assign(obj, {
           character:
-            characters.find(
+            [...characters.values()].find(
               (c) => c.definition === whoOrCommandOrNarrator.value
             ) ?? new Character(null, [[whoOrCommandOrNarrator.value]]),
           text: valueOrCharacter.value

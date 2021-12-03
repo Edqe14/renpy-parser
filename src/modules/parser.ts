@@ -6,11 +6,11 @@ import {
 import Helper from '@/modules/helper';
 
 export default class Parser {
-  public characters: Character[];
+  public characters: Map<string, Character>;
 
-  public labels: Record<string, Label>;
+  public labels: Map<string, Label>;
 
-  public images: Image[];
+  public images: Map<string, Image>;
 
   /**
    * @ignore
@@ -20,9 +20,9 @@ export default class Parser {
   constructor(str: string) {
     if (!str || typeof str !== 'string') throw new TypeError('Input need to be a string!');
 
-    this.characters = [];
-    this.labels = {};
-    this.images = [];
+    this.characters = new Map();
+    this.labels = new Map();
+    this.images = new Map();
 
     this._activeLabel = null;
 
@@ -69,7 +69,8 @@ export default class Parser {
             .split(', ')
             .map((o) => o.split('='));
 
-          this.characters.push(new Character(def, args));
+          const character = new Character(def, args);
+          this.characters.set(character.definition as string, character);
         }
 
         break;
@@ -77,18 +78,19 @@ export default class Parser {
 
       case 'image': {
         const name = split[1];
-        const file = line.split('=')[1].trim().replace(/"/gi, '');
+        const value = line.split('=')[1].trim().replace(/"/gi, '');
 
-        this.images.push(new Image(name, file));
+        const image = new Image(name, value);
+        this.images.set(image.name, image);
         break;
       }
 
       case 'label':
       case 'menu': {
         const name = command === 'menu' ? 'menu' : split[1].replace(/:/gi, '');
-        if (!Object.keys(this.labels).includes(name)) {
+        if (!this.labels.has(name)) {
           const label = new Label(name);
-          this.labels[label.name] = label;
+          this.labels.set(label.name, label);
         }
 
         this._activeLabel = name;
@@ -97,7 +99,7 @@ export default class Parser {
 
       default: {
         if (Helper.isIndented(line)) {
-          const label = Object.values(this.labels).find((l) => l.name === this._activeLabel);
+          const label = this.labels.get(this._activeLabel as string);
           if (label) label.appendCommand(new Command(line, this.characters));
         }
 

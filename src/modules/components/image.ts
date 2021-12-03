@@ -1,10 +1,10 @@
 export default class Image {
   public name: string;
 
-  public file: string;
+  public value: string;
 
-  constructor(name: string, file: string) {
+  constructor(name: string, value: string) {
     this.name = name;
-    this.file = file;
+    this.value = value;
   }
 }
