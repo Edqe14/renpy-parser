@@ -17,6 +17,8 @@ export default class Parser {
   private activeLabel: string | null;
 
   constructor(str: string) {
+    if (!str || typeof str !== 'string') throw new TypeError('Input need to be a string!');
+
     this.characters = [];
     this.labels = [];
     this.images = [];
